@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Switch, Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
-// import { useHistory, useLocation } from 'react-router';
+import { useHistory, useLocation } from 'react-router';
 import styled from 'styled-components/macro';
 
 import { ANTD_GRAY } from '../../entity/shared/constants';

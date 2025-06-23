@@ -24,8 +24,8 @@ export default function LineageViz({
 }: Props) {
     const [windowWidth, windowHeight] = useWindowSize();
 
-    const height = windowHeight - 111;
-    const width = windowWidth;
+    const height = 600;
+    const width = windowWidth - 150;
     const initialTransform = {
         scaleX: 2 / 3,
         scaleY: 2 / 3,

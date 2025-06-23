@@ -73,6 +73,8 @@ export default function LineageVizInsideZoom({
     const [showExpandedTitles, setShowExpandedTitles] = useState(false);
     const [showColumns, setShowColumns] = useState(true);
     const [isHideSiblingMode, setIsHideSiblingMode] = useState(false);
+    const [isDrag, setIsDrag] = useState(true);
+    const [isLineageModalVisible, setIsLineageModalVisible] = useState(false);
 
     useEffect(() => {
         zoom.setTransformMatrix({ ...zoom.transformMatrix, translateY: 0, translateX: width / 2 });
@@ -100,14 +102,18 @@ export default function LineageVizInsideZoom({
                     columnsByUrn,
                     setColumnsByUrn,
                     refetchCenterNode,
+                    isDrag, 
+                    setIsDrag,
+                    isLineageModalVisible, 
+                    setIsLineageModalVisible
                 }}
             >
-                <ControlsDiv>
+                {/* <ControlsDiv>
                     <LineageVizControls
                         showExpandedTitles={showExpandedTitles}
                         setShowExpandedTitles={setShowExpandedTitles}
                     />
-                </ControlsDiv>
+                </ControlsDiv> */}
                 <ZoomContainer>
                     <ZoomControls>
                         <ZoomButton onClick={() => zoom.scale({ scaleX: 1.2, scaleY: 1.2 })}>

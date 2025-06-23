@@ -72,19 +72,27 @@ export default function LineageEntityNode({
     setUpdatedLineages: React.Dispatch<React.SetStateAction<UpdatedLineages>>;
 }) {
     const { direction } = node;
-    const { expandTitles, collapsedColumnsNodes, showColumns, isHideSiblingMode, refetchCenterNode } = useContext(LineageExplorerContext);
+    const { 
+        expandTitles,
+        collapsedColumnsNodes,
+        showColumns,
+        isHideSiblingMode,
+        refetchCenterNode,
+        setIsDrag,
+        isLineageModalVisible,
+        setIsLineageModalVisible 
+    } = useContext(LineageExplorerContext);
     const { startTimeMillis, endTimeMillis } = useGetLineageTimeParams();
     const [hasExpanded, setHasExpanded] = useState(false);
     const [isExpanding, setIsExpanding] = useState(false);
     const [expandHover, setExpandHover] = useState(false);
     const [asyncLineageData, setAsyncLineageData] = useState({});
-    const [loading, setLoading] = useState(false)
     const areColumnsCollapsed = !!collapsedColumnsNodes[node?.data?.urn || 'noop'];
     const isRestricted = node.data.type === EntityType.Restricted;
 
-    const getAsyncEntityLineage = (urn: string) => {
-        setLoading(true)
-        fetch('/DataResMgr/GetEntityLineage', {
+    const getAsyncEntityLineage = async (urn: string) => {
+        // 请求展开节点数据
+        const response = await fetch('/GetEntityLineage', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -92,13 +100,12 @@ export default function LineageEntityNode({
             body: JSON.stringify({
                 dataResUrn: urn,
             }),
-        }).then(response => {
-            setLoading(false)
-            if (!response.ok) throw new Error('请求失败');
-            return response.json();
-        }).then(({data}) => {
-            setAsyncLineageData(data);
-        })
+        });
+        
+        if (!response.ok) throw new Error('请求失败');
+        
+        const {data} = await response.json();
+        setAsyncLineageData(data);
     }
 
     function fetchEntityLineage() {
@@ -120,7 +127,7 @@ export default function LineageEntityNode({
     };
 
     useEffect(() => {
-        if (asyncLineageData && asyncLineageData.entity && !hasExpanded && !loading) {
+        if (asyncLineageData && asyncLineageData.entity && !hasExpanded) {
             const entityAndType = {
                 type: asyncLineageData.entity.type,
                 entity: { ...asyncLineageData.entity },
@@ -128,7 +135,7 @@ export default function LineageEntityNode({
             onExpandClick(entityAndType);
             setHasExpanded(true);
         }
-    }, [asyncLineageData, onExpandClick, hasExpanded, loading]);
+    }, [asyncLineageData, onExpandClick, hasExpanded]);
 
     const entityRegistry = useEntityRegistry();
     const unexploredHiddenChildren =
@@ -354,6 +361,9 @@ export default function LineageEntityNode({
                             entityType={node.data.type}
                             entityPlatform={node.data.platform?.name}
                             canEditLineage={node.data.canEditLineage}
+                            setIsDrag={setIsDrag}
+                            isLineageModalVisible={isLineageModalVisible}
+                            setIsLineageModalVisible={setIsLineageModalVisible}
                         />
                     </foreignObject>
                 )}
@@ -419,7 +429,8 @@ export default function LineageEntityNode({
                             textAnchor="start"
                             fill={isCenterNode ? '#1890FF' : 'black'}
                         >
-                            {getShortenedTitle(node.data.name, width)}
+                            <title>{node.data.name}</title>
+                            {getShortenedTitle(node.data.name, 200)}
                         </UnselectableText>
                     )}
                     <foreignObject x={healthX} y={healthY} width="20" height="20">
@@ -443,8 +454,8 @@ export default function LineageEntityNode({
                         fill="black"
                         y={centerY - 20}
                     >
-                        {unexploredHiddenChildren} hidden {direction === Direction.Upstream ? 'downstream' : 'upstream'}{' '}
-                        {unexploredHiddenChildren > 1 ? 'dependencies' : 'dependency'}
+                        {unexploredHiddenChildren}个隐藏的{direction === Direction.Upstream ? '下游' : '上游'}血缘数据
+                        {/* {unexploredHiddenChildren > 1 ? 'dependencies' : 'dependency'} */}
                     </UnselectableText>
                 ) : null}
                 {showColumns && (node.data.schemaMetadata || node.data.inputFields) && (

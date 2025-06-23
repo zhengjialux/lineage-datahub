@@ -6,3 +6,8 @@ export const UNION_TOKEN = '[type=union]';
 export const SUCCESS_COLOR_HEX = '#52C41A';
 export const FAILURE_COLOR_HEX = '#F5222D';
 export const WARNING_COLOR_HEX = '#FA8C16';
+
+export const EntityEditStatus = {
+    Downstream: '下游',
+    Upstream: '上游',
+}

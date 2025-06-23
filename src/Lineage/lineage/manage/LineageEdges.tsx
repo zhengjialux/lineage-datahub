@@ -7,6 +7,7 @@ import { useEntityRegistry } from '../../useEntityRegistry';
 import { Direction } from '../types';
 import type { FetchedEntity } from '../types';
 import EntityEdge from './EntityEdge';
+import { EntityEditStatus } from '../../shared/constants'
 
 const LineageEdgesWrapper = styled.div`
     height: 225px;
@@ -69,7 +70,7 @@ export default function LineageEdges({
         <LineageEdgesWrapper>
             {!filteredRelationships?.length && !entitiesToAdd.length && (
                 <EmptyWrapper data-testid="empty-lineage">
-                    <Empty description={`No ${lineageDirection.toLocaleLowerCase()} entities`} />
+                    <Empty description={`没有${EntityEditStatus[lineageDirection]}数据`} />
                 </EmptyWrapper>
             )}
             {filteredRelationships &&

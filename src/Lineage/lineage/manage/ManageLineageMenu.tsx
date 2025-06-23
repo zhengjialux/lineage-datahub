@@ -28,7 +28,7 @@ const MenuItemContent = styled.div``;
 function PopoverContent({ centerEntity, direction }: { centerEntity?: () => void; direction: string }) {
     return (
         <div>
-            <UnderlineWrapper onClick={centerEntity}>Focus</UnderlineWrapper> on this entity to make {direction} edits.
+            {direction === 'downstream' ? '只能进行上游编辑' : '只能进行下游编辑' }
         </div>
     );
 }
@@ -38,7 +38,7 @@ function getDownstreamDisabledPopoverContent(canEditLineage: boolean, isDashboar
         return UNAUTHORIZED_TEXT;
     }
     if (isDashboard) {
-        return 'Dashboard entities have no downstream lineage';
+        return '没有下游血缘';
     }
     return <PopoverContent centerEntity={centerEntity} direction="downstream" />;
 }
@@ -56,6 +56,9 @@ interface Props {
     entityPlatform?: string;
     canEditLineage?: boolean;
     disableDropdown?: boolean;
+    setIsDrag: (isDrag: boolean) => void;
+    isLineageModalVisible: boolean;
+    setIsLineageModalVisible: (isLineageModalVisible: boolean) => void;
 }
 
 export default function ManageLineageMenu({
@@ -71,12 +74,15 @@ export default function ManageLineageMenu({
     entityPlatform,
     canEditLineage,
     disableDropdown,
+    setIsDrag,
+    isLineageModalVisible,
+    setIsLineageModalVisible
 }: Props) {
-    const [isModalVisible, setIsModalVisible] = useState(false);
     const [lineageDirection, setLineageDirection] = useState<Direction>(Direction.Upstream);
 
     function manageLineage(direction: Direction) {
-        setIsModalVisible(true);
+        setIsLineageModalVisible(true);
+        setIsDrag(false);
         setLineageDirection(direction);
     }
 
@@ -107,7 +113,7 @@ export default function ManageLineageMenu({
                           >
                               <MenuItemContent>
                                   <ArrowUpOutlined />
-                                  &nbsp; Edit Upstream
+                                  &nbsp; 编辑上游
                               </MenuItemContent>
                           </Popover>
                       </MenuItemStyle>
@@ -128,24 +134,24 @@ export default function ManageLineageMenu({
                           >
                               <MenuItemContent>
                                   <ArrowDownOutlined />
-                                  &nbsp; Edit Downstream
+                                  &nbsp; 编辑下游
                               </MenuItemContent>
                           </Popover>
                       </MenuItemStyle>
                   ),
               }
             : null,
-        !isCenterNode && centerEntity
-            ? {
-                  key: 2,
-                  label: (
-                      <MenuItemStyle onClick={centerEntity}>
-                          <StyledImage src={FocusIcon} alt="focus on entity" />
-                          &nbsp; Focus on Entity
-                      </MenuItemStyle>
-                  ),
-              }
-            : null,
+        // !isCenterNode && centerEntity
+        //     ? {
+        //           key: 2,
+        //           label: (
+        //               <MenuItemStyle onClick={centerEntity}>
+        //                   <StyledImage src={FocusIcon} alt="focus on entity" />
+        //                   &nbsp; 聚焦节点
+        //               </MenuItemStyle>
+        //           ),
+        //       }
+        //     : null,
     ];
 
     return (
@@ -157,16 +163,20 @@ export default function ManageLineageMenu({
                         disabled={disableDropdown}
                         menu={{ items }}
                         trigger={['click']}
+                        onOpenChange={(open) => setIsDrag(!open)}
                     >
                         {menuIcon || <MoreOutlined style={{ fontSize: 18 }} />}
                     </Dropdown>
                 </div>
             </Tooltip>
-            {isModalVisible && (
+            {isLineageModalVisible && (
                 <ManageLineageModal
                     entityUrn={entityUrn}
                     lineageDirection={lineageDirection}
-                    closeModal={() => setIsModalVisible(false)}
+                    closeModal={() => {
+                        setIsLineageModalVisible(false)
+                        setIsDrag(true);
+                    }}
                     refetchEntity={refetchEntity}
                     setUpdatedLineages={setUpdatedLineages}
                     showLoading={showLoading}

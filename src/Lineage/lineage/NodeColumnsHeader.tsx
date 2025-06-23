@@ -97,7 +97,7 @@ export default function NodeColumnsHeader({ node, filterText, setFilterText }: P
                             {isSearchBarVisible && (
                                 <StyledInput
                                     defaultValue={filterText}
-                                    placeholder="Find column..."
+                                    placeholder="搜索字段名"
                                     onChange={(e) => setFilterText(e.target.value)}
                                     onBlur={hideIfSearchIsEmpty}
                                     allowClear

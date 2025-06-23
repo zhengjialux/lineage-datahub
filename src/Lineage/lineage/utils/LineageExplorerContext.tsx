@@ -10,6 +10,7 @@ export const LineageExplorerContext = React.createContext<LineageExplorerContext
     setCollapsedColumnsNodes: null,
     fineGrainedMap: { forward: [], reverse: [] },
     selectedField: null,
+    isDrag: true,
     setSelectedField: () => {},
     highlightedEdges: [],
     setHighlightedEdges: () => {},
@@ -19,7 +20,10 @@ export const LineageExplorerContext = React.createContext<LineageExplorerContext
     setColumnsByUrn: () => {},
     refetchCenterNode: () => {},
     setShowColumns: () => {},
-    setIsHideSiblingMode: () => {}
+    setIsHideSiblingMode: () => {}, 
+    setIsDrag: () => {},
+    isLineageModalVisible: false,
+    setIsLineageModalVisible: () => {}
 });
 
 type LineageExplorerContextType = {
@@ -40,4 +44,8 @@ type LineageExplorerContextType = {
     refetchCenterNode: () => void;
     setShowColumns?: any;
     setIsHideSiblingMode?: any;
+    isDrag?: boolean;
+    setIsDrag?: any;
+    isLineageModalVisible: boolean;
+    setIsLineageModalVisible:  any;
 };

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState, useContext } from 'react';
 // import { useHistory } from 'react-router';
-import { Button, Drawer } from 'antd';
+import { Drawer } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import { useEntityRegistry } from '../useEntityRegistry';
@@ -50,10 +50,10 @@ type Props = {
     urn: string;
     type: EntityType;
     data: any;
-    fetchData: () => void;
+    setLineageData: (data: any) => void;
 };
 
-export default function LineageExplorer({ urn, type, data, fetchData }: Props) {
+export default function LineageExplorer({ urn, type, data, setLineageData }: Props) {
     const previousUrn = usePrevious(urn);
     // const history = useHistory();
     const [fineGrainedMap] = useState<any>({ forward: {}, reverse: {} });
@@ -63,12 +63,6 @@ export default function LineageExplorer({ urn, type, data, fetchData }: Props) {
     const { showColumns, isHideSiblingMode } = useContext(LineageExplorerContext);
     // 时间范围
     const { startTimeMillis, endTimeMillis } = useGetLineageTimeParams();
-
-    // 替换refetch方法
-    const refetch = useCallback(() => {
-        // 这里可以调用外部传入的刷新方法或返回空Promise
-        return Promise.resolve({});
-    }, []);
 
     const entityData: EntityAndType | null | undefined = useMemo(() => getEntityAndType(data), [data]);
 
@@ -168,6 +162,7 @@ export default function LineageExplorer({ urn, type, data, fetchData }: Props) {
                             setSelectedEntity(params);
                         }}
                         onEntityCenter={(params: EntitySelectParams) => {
+                            // 点击任意节点居中
                             // history.push(
                             //     `${entityRegistry.getEntityUrl(
                             //         params.type,
@@ -184,10 +179,23 @@ export default function LineageExplorer({ urn, type, data, fetchData }: Props) {
                             });
                         }}
                         refetchCenterNode={async () => {
-                            const response = await fetchData()
-                            if(response) {
-                                resetAsyncEntity(urn);
-                            }
+                            // 向外加载节点
+                            // const response = await fetch('/GetEntityLineage', {
+                            //     method: 'POST',
+                            //     headers: {
+                            //         'Content-Type': 'application/json',
+                            //     },
+                            //     body: JSON.stringify({
+                            //         dataResUrn: 'urn:li:dataset:(urn:li:dataPlatform:你好啊abcd哈哈啊,6c85e813-6aac-303c-a65c-588eff76c29b,PROD)',
+                            //     }),
+                            // });
+                            
+                            // if (!response.ok) throw new Error('请求失败');
+                            
+                            // const {data} = await response.json();
+                            // setLineageData(data);
+                            // setLineageData({...data, type: EntityType.Dataset });
+                            resetAsyncEntity(urn);
                         }}
                     />
                 </div>

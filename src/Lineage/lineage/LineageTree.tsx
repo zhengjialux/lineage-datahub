@@ -56,6 +56,8 @@ export default function LineageTree({
         visibleColumnsByUrn,
         columnsByUrn,
         setColumnsByUrn,
+        isDrag,
+        isLineageModalVisible
     } = useContext(LineageExplorerContext);
 
     useEffect(() => {
@@ -108,6 +110,9 @@ export default function LineageTree({
             (event.clientX - (dragState.x || 0)) * (1 / zoom.transformMatrix.scaleY) + nodesByUrn[dragState.urn].y;
         const realX =
             (event.clientY - (dragState.y || 0)) * (1 / zoom.transformMatrix.scaleX) + nodesByUrn[dragState.urn].x;
+        
+        if(!isDrag || isLineageModalVisible) return;
+
         setDraggedNodes({
             ...draggedNodes,
             [dragState?.urn]: { x: realX, y: realY },

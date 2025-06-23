@@ -1,6 +1,6 @@
 import { LoadingOutlined, SubnodeOutlined } from '@ant-design/icons';
 import { AutoComplete, Empty } from 'antd';
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import styled from 'styled-components/macro';
 import { useEntityRegistry } from '../../useEntityRegistry';
 import { EntityType } from '../../types.generated';
@@ -10,6 +10,7 @@ import { getValidEntityTypes } from '../utils/manageLineageUtils';
 import LineageEntityView from './LineageEntityView';
 import EntityRegistry from '../../entity/EntityRegistry';
 import { ANTD_GRAY } from '../../entity/shared/constants';
+import { EntityEditStatus } from '../../shared/constants'
 
 const AddEdgeWrapper = styled.div`
     padding: 15px 20px;
@@ -47,9 +48,9 @@ const LoadingWrapper = styled.div`
 `;
 
 function getPlaceholderText(validEntityTypes: EntityType[], entityRegistry: EntityRegistry) {
-    let placeholderText = 'Search for ';
+    let placeholderText = '搜索';
     if (!validEntityTypes.length) {
-        placeholderText = `${placeholderText} entities to add...`;
+        placeholderText = `${placeholderText}要添加的数据...`;
     } else if (validEntityTypes.length === 1) {
         placeholderText = `${placeholderText} ${entityRegistry.getCollectionName(validEntityTypes[0])}...`;
     } else {
@@ -87,31 +88,29 @@ export default function AddEntityEdge({
     const [loading, setLoading] = useState(false)
     const validEntityTypes = getValidEntityTypes(lineageDirection, entityType);
 
-    function handleSearch(text: string) {
-        setLoading(true)
+    async function handleSearch(text: string) {
         setAutoCompleteResults({})
         setQueryText(text);
         if (text !== '') {
+            setLoading(true)
             // 搜索框查询
-            fetch('/DataResMgr/GetAutoCompleteMultipleResults', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    dataResUrn: entityUrn,
-                    types: validEntityTypes,
-                    query: text,
-                    limit: 15,
-                }),
-            }).then(response => {
-                setLoading(false)
-                if (!response.ok) throw new Error('请求失败');
-                return response.json();
-            }).then(({data}) => {
-                setAutoCompleteResults(data);
-            })
-        } else {
+            // const response = await fetch('/GetEntityLineage', {
+            //     method: 'POST',
+            //     headers: {
+            //         'Content-Type': 'application/json',
+            //     },
+            //     body: JSON.stringify({
+            //         dataResUrn: entityUrn,
+            //         types: validEntityTypes,
+            //         query: text,
+            //         limit: 15,
+            //     }),
+            // });
+            
+            // if (!response.ok) throw new Error('请求失败');
+            
+            // const {data} = await response.json();
+            // setAutoCompleteResults(data);
             setLoading(false)
         }
     }
@@ -148,13 +147,13 @@ export default function AddEntityEdge({
         <AddEdgeWrapper>
             <AddLabel>
                 <AddIcon />
-                Add {lineageDirection}
+                添加{EntityEditStatus[lineageDirection]}
             </AddLabel>
             <StyledAutoComplete
                 autoFocus
                 showSearch
                 value={queryText}
-                placeholder={placeholderText}
+                placeholder="搜索要添加的数据"
                 onSearch={handleSearch}
                 onSelect={(urn: any) => selectEntity(urn)}
                 filterOption={false}

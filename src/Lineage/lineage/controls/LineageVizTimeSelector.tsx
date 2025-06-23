@@ -1,6 +1,6 @@
 import React from 'react';
 import moment from 'moment';
-// import { useHistory, useLocation } from 'react-router';
+import { useHistory, useLocation } from 'react-router';
 import { navigateToLineageUrl } from '../utils/navigateToLineageUrl';
 import analytics, { EventType } from '../../analytics';
 import { getTimeFromNow } from '../../shared/timeUtils';
@@ -13,8 +13,8 @@ type Props = {
 };
 
 export default function LineageVizTimeSelector({ isHideSiblingMode, showColumns }: Props) {
-    // const history = useHistory();
-    // const location = window.location
+    const history = useHistory();
+    const location = window.location
     const { startTimeMillis, endTimeMillis } = useGetLineageTimeParams();
 
     const lineageTimeSelectorOnChange = (dates, _dateStrings) => {
@@ -30,14 +30,14 @@ export default function LineageVizTimeSelector({ isHideSiblingMode, showColumns 
                 relativeEndDate,
             });
 
-            // navigateToLineageUrl({
-            //     location,
-            //     history,
-            //     isHideSiblingMode,
-            //     showColumns,
-            //     startTimeMillis: startTimeMillisValue,
-            //     endTimeMillis: endTimeMillisValue,
-            // });
+            navigateToLineageUrl({
+                location,
+                history,
+                isHideSiblingMode,
+                showColumns,
+                startTimeMillis: startTimeMillisValue,
+                endTimeMillis: endTimeMillisValue,
+            });
         }
     };
 
