@@ -2,6 +2,8 @@
 
 > 拥有血缘正常功能：展示、编辑上下游
 
+![dataHub血缘](datahub_lineage.png)
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:
